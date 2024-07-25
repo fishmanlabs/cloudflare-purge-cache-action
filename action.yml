@@ -39,5 +39,5 @@ runs:
   main: 'dist/index.js'
 
 branding:
-  icon: 'hexagon'
+  icon: 'activity'
   color: 'black'
