@@ -1,0 +1,45 @@
+name: 'Cloudflare Cache Purge'
+description: 'A GitHub Action to purge cache in Cloudflare zones.'
+author: 'Idan Fishman'
+
+inputs:
+  api_token:
+    description:
+      'Cloudflare API token with the following permissions: Zone.Cache Purge.'
+    required: true
+  purge_everything:
+    description: 'Purge everything from the zone. (true/false)'
+    required: true
+  purge_files:
+    description:
+      'List of specific files to purge from the zone. Ignored if
+      purge_everything is true.'
+    required: false
+  purge_tags:
+    description:
+      'List of specific tags to purge from the zone. Ignored if purge_everything
+      is true. (Enterprise only)'
+    required: false
+  purge_hosts:
+    description:
+      'List of specific hosts to purge from the zone. Ignored if
+      purge_everything is true. (Enterprise only)'
+    required: false
+  purge_prefixes:
+    description:
+      'List of specific prefixes to purge from the zone. Ignored if
+      purge_everything is true. (Enterprise only)'
+    required: false
+  zone_id:
+    description: 'Cloudflare Zone ID.'
+    required: true
+
+outputs:
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+
+branding:
+  icon: 'hexagon'
+  color: 'black'
