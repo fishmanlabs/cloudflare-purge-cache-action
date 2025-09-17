@@ -25,29 +25,6 @@ function parseInput(input: string | undefined): string[] | undefined {
 }
 
 /**
- * Validate that only one purge option is provided.
- * @param purgeFiles - Array of files to purge.
- * @param purgeTags - Array of tags to purge.
- * @param purgeHosts - Array of hosts to purge.
- * @param purgePrefixes - Array of prefixes to purge.
- */
-function validateSinglePurgeOption(
-  purgeFiles?: string[],
-  purgeTags?: string[],
-  purgeHosts?: string[],
-  purgePrefixes?: string[]
-): void {
-  const options = [purgeFiles, purgeTags, purgeHosts, purgePrefixes].filter(
-    option => option !== undefined
-  )
-  if (options.length > 1) {
-    throw new Error(
-      'only one of purge_files, purge_tags, purge_hosts, or purge_prefixes can be provided.'
-    )
-  }
-}
-
-/**
  * Retry a function up to a specified number of attempts.
  * @param fn - The function to retry.
  * @param attempts - The number of attempts.
@@ -87,35 +64,48 @@ async function run(): Promise<void> {
     core.debug(`Purge Hosts: ${purgeHosts}`)
     core.debug(`Purge Prefixes: ${purgePrefixes}`)
 
-    if (!purgeEverything) {
-      validateSinglePurgeOption(
-        purgeFiles,
-        purgeTags,
-        purgeHosts,
-        purgePrefixes
-      )
-    }
-
     const cf = new Cloudflare({ apiToken })
 
     const body: PurgeBody = {}
+    const purgeTypes: string[] = []
+
     if (purgeEverything) {
       body.purge_everything = true
-    } else {
-      if (purgeFiles) {
-        body.files = purgeFiles
-      } else if (purgeTags) {
-        body.tags = purgeTags
-      } else if (purgeHosts) {
-        body.hosts = purgeHosts
-      } else if (purgePrefixes) {
-        body.prefixes = purgePrefixes
-      }
+      await retry(async () => {
+        await cf.cache.purge({ zone_id: zoneId, ...body })
+        core.info('Purged everything successfully')
+      }, 3)
+      return
+    }
+
+    if (purgeFiles && purgeFiles.length > 0) {
+      body.files = purgeFiles
+      purgeTypes.push(`${purgeFiles.length} file(s)`)
+    }
+
+    if (purgeTags && purgeTags.length > 0) {
+      body.tags = purgeTags
+      purgeTypes.push(`${purgeTags.length} tag(s)`)
+    }
+
+    if (purgeHosts && purgeHosts.length > 0) {
+      body.hosts = purgeHosts
+      purgeTypes.push(`${purgeHosts.length} host(s)`)
+    }
+
+    if (purgePrefixes && purgePrefixes.length > 0) {
+      body.prefixes = purgePrefixes
+      purgeTypes.push(`${purgePrefixes.length} prefix(es)`)
+    }
+
+    if (Object.keys(body).length === 0) {
+      core.warning('No purge operations specified')
+      return
     }
 
     await retry(async () => {
       await cf.cache.purge({ zone_id: zoneId, ...body })
-      core.info('purge request sent successfully')
+      core.info(`Successfully purged: ${purgeTypes.join(', ')}`)
     }, 3)
   } catch (error) {
     core.setFailed(`action failed with error: ${error}`)

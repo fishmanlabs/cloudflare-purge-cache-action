@@ -1,6 +1,6 @@
 {
   "name": "cloudflare-cache-purge-action",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A GitHub Action to purge cache in Cloudflare zones.",
   "author": "Idan Fishman",
   "main": "index.js",
@@ -25,6 +25,7 @@
   "devDependencies": {
     "@types/node": "^20.14.12",
     "@types/node-fetch": "^2.6.11",
+    "@vercel/ncc": "^0.38.3",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4"
   }

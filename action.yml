@@ -12,23 +12,24 @@ inputs:
     required: true
   purge_files:
     description:
-      'List of specific files to purge from the zone. Ignored if
-      purge_everything is true.'
+      'List of specific files to purge from the zone. Can be combined with other
+      purge options. Ignored if purge_everything is true.'
     required: false
   purge_tags:
     description:
-      'List of specific tags to purge from the zone. Ignored if purge_everything
-      is true. (Enterprise only)'
+      'List of specific tags to purge from the zone. Can be combined with other
+      purge options. Ignored if purge_everything is true. (Enterprise only)'
     required: false
   purge_hosts:
     description:
-      'List of specific hosts to purge from the zone. Ignored if
-      purge_everything is true. (Enterprise only)'
+      'List of specific hosts to purge from the zone. Can be combined with other
+      purge options. Ignored if purge_everything is true. (Enterprise only)'
     required: false
   purge_prefixes:
     description:
-      'List of specific prefixes to purge from the zone. Ignored if
-      purge_everything is true. (Enterprise only)'
+      'List of specific prefixes to purge from the zone. Can be combined with
+      other purge options. Ignored if purge_everything is true. (Enterprise
+      only)'
     required: false
   zone_id:
     description: 'Cloudflare Zone ID.'
